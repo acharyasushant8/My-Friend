@@ -82,6 +82,9 @@ body {
 .glass-card {
   pointer-events: auto;
   width: min(480px, 92vw);
+  max-height: 88vh;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
   padding: 2.75rem 2.25rem;
   border-radius: 28px;
   text-align: center;
@@ -236,7 +239,7 @@ body {
 
 .attempt-counter {
   position: fixed;
-  bottom: 1.25rem;
+  bottom: calc(1.25rem + env(safe-area-inset-bottom, 0px));
   left: 50%;
   transform: translateX(-50%);
   font-family: var(--font-body);
@@ -304,8 +307,8 @@ body {
 
 .music-toggle {
   position: fixed;
-  top: 1.25rem;
-  right: 1.25rem;
+  top: calc(1.25rem + env(safe-area-inset-top, 0px));
+  right: calc(1.25rem + env(safe-area-inset-right, 0px));
   z-index: 50;
   display: flex;
   align-items: center;
@@ -401,5 +404,38 @@ body {
   .btn-yes,
   .app-root {
     animation: none !important;
+  }
+}
+
+/* Landscape phones / short windows: width may be plenty, but height is
+   tight. Shrink vertical spacing so the card fits without feeling cramped,
+   and rely on .glass-card's own overflow-y scroll as a safety net. */
+@media (max-height: 480px) {
+  .glass-card {
+    padding: 1.2rem 1.8rem;
+    max-height: 92vh;
+  }
+
+  .card-icon {
+    font-size: 1.6rem;
+    margin-bottom: 0.35rem;
+  }
+
+  .headline {
+    font-size: 1.3rem;
+    margin-bottom: 0.4rem;
+  }
+
+  .subheading {
+    margin-bottom: 0.9rem;
+    font-size: 0.82rem;
+  }
+
+  .button-row {
+    min-height: auto;
+  }
+
+  .hint-text {
+    margin-top: 0.6rem;
   }
 }

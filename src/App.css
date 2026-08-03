@@ -1,0 +1,383 @@
+/* ==========================================================================
+   Global resets & base
+   ========================================================================== */
+
+:root {
+  --color-bg-deep: #0b0620;
+  --color-blue: #7dd3fc;
+  --color-purple: #c084fc;
+  --color-pink: #f9a8d4;
+  --color-text: #ffffff;
+  --color-text-muted: #e4e2fa;
+  --font-display: 'Baloo 2', system-ui, sans-serif;
+  --font-body: 'Quicksand', system-ui, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: var(--color-bg-deep);
+  color: var(--color-text);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+}
+
+#root {
+  width: 100%;
+  height: 100%;
+}
+
+.app-root {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  /* Subtle animated gradient wash that breathes behind the 3D canvas,
+     visible mostly at the edges since the canvas fills the frame. */
+  background: radial-gradient(
+      ellipse at 20% 20%,
+      rgba(125, 211, 252, 0.18),
+      transparent 55%
+    ),
+    radial-gradient(ellipse at 80% 75%, rgba(192, 132, 252, 0.18), transparent 55%),
+    var(--color-bg-deep);
+  background-size: 200% 200%;
+  animation: gradientDrift 18s ease-in-out infinite;
+}
+
+@keyframes gradientDrift {
+  0% {
+    background-position: 0% 0%;
+  }
+  50% {
+    background-position: 100% 100%;
+  }
+  100% {
+    background-position: 0% 0%;
+  }
+}
+
+/* ==========================================================================
+   Center stage & glassmorphism card
+   ========================================================================== */
+
+.stage {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  pointer-events: none; /* let mouse-move under the card still drive camera parallax */
+  z-index: 10;
+}
+
+.glass-card {
+  pointer-events: auto;
+  width: min(480px, 92vw);
+  padding: 2.75rem 2.25rem;
+  border-radius: 28px;
+  text-align: center;
+  color: var(--color-text);
+
+  /* Dark, low-transparency glass: the frosted-glass *look* still comes
+     from the blur + border + highlight below, but the base fill is dark
+     enough that bright scene elements behind it (the glowing heart,
+     stars, sparkles) never wash the text out. */
+  background: linear-gradient(
+    160deg,
+    rgba(30, 22, 58, 0.72),
+    rgba(15, 10, 35, 0.68)
+  );
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.14);
+  backdrop-filter: blur(22px) saturate(130%);
+  -webkit-backdrop-filter: blur(22px) saturate(130%);
+}
+
+.card-icon {
+  font-size: 2.6rem;
+  color: var(--color-pink);
+  filter: drop-shadow(0 0 12px rgba(249, 168, 212, 0.7));
+  margin-bottom: 0.75rem;
+  animation: heartbeat 1.8s ease-in-out infinite;
+}
+
+.card-icon-happy {
+  color: #7ef7c0;
+  filter: drop-shadow(0 0 14px rgba(126, 247, 192, 0.8));
+}
+
+@keyframes heartbeat {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  25% {
+    transform: scale(1.15);
+  }
+  40% {
+    transform: scale(0.98);
+  }
+}
+
+.headline {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(1.6rem, 4.5vw, 2.4rem);
+  margin: 0 0 0.75rem;
+  background: linear-gradient(90deg, var(--color-blue), var(--color-purple), var(--color-pink));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  letter-spacing: 0.3px;
+  filter: drop-shadow(0 2px 10px rgba(0, 0, 0, 0.35));
+}
+
+.subheading {
+  font-family: var(--font-body);
+  font-size: clamp(0.95rem, 2.4vw, 1.08rem);
+  line-height: 1.55;
+  color: var(--color-text-muted);
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.5);
+  margin: 0 0 1.9rem;
+}
+
+.subheading.big {
+  font-size: clamp(1.05rem, 2.8vw, 1.25rem);
+  color: var(--color-text);
+}
+
+.sparkle-row {
+  display: flex;
+  justify-content: center;
+  gap: 0.6rem;
+  font-size: 1.4rem;
+  color: #fef08a;
+  margin-top: 1.25rem;
+}
+
+/* ==========================================================================
+   Buttons
+   ========================================================================== */
+
+.button-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.9rem;
+  justify-content: center;
+  align-items: center;
+  min-height: 56px;
+}
+
+.btn {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.98rem;
+  border: none;
+  border-radius: 999px;
+  padding: 0.85rem 1.6rem;
+  cursor: pointer;
+  color: #1a1030;
+  white-space: nowrap;
+  transition: box-shadow 0.25s ease, filter 0.25s ease;
+}
+
+.btn-yes {
+  background: linear-gradient(120deg, #93c5fd, #c4b5fd, #f9a8d4);
+  color: #1a1030;
+  box-shadow: 0 0 0 rgba(147, 197, 253, 0);
+  animation: glowPulse 2.6s ease-in-out infinite;
+}
+
+@keyframes glowPulse {
+  0%,
+  100% {
+    box-shadow: 0 0 14px rgba(147, 197, 253, 0.35), 0 4px 18px rgba(0, 0, 0, 0.25);
+  }
+  50% {
+    box-shadow: 0 0 26px rgba(196, 181, 253, 0.65), 0 4px 22px rgba(0, 0, 0, 0.3);
+  }
+}
+
+.btn-maybe {
+  background: rgba(255, 255, 255, 0.14);
+  color: var(--color-text);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  backdrop-filter: blur(6px);
+}
+
+.btn-maybe-escaped {
+  position: fixed;
+  z-index: 40;
+  transform: translate(-50%, -50%);
+}
+
+.btn-ghost {
+  display: inline-block;
+  width: 1px;
+  height: 1px;
+}
+
+.hint-text {
+  margin: 1.1rem 0 0;
+  font-size: 0.8rem;
+  color: rgba(245, 243, 255, 0.55);
+}
+
+.attempt-counter {
+  position: fixed;
+  bottom: 1.25rem;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--font-body);
+  font-size: 0.78rem;
+  color: rgba(245, 243, 255, 0.55);
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  padding: 0.35rem 0.9rem;
+  border-radius: 999px;
+  z-index: 30;
+  pointer-events: none;
+}
+
+/* ==========================================================================
+   Funny message bubble that follows the runaway button
+   ========================================================================== */
+
+.funny-bubble {
+  position: fixed;
+  transform: translate(-50%, -50%);
+  z-index: 41;
+  background: rgba(255, 255, 255, 0.92);
+  color: #2a1a4a;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.85rem;
+  padding: 0.5rem 0.9rem;
+  border-radius: 14px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+/* ==========================================================================
+   Confetti / heart-burst overlay
+   ========================================================================== */
+
+.confetti-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 25;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.heart-burst-origin {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+}
+
+.flying-heart {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: inline-block;
+  filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.5));
+}
+
+/* ==========================================================================
+   Music toggle button
+   ========================================================================== */
+
+.music-toggle {
+  position: fixed;
+  top: 1.25rem;
+  right: 1.25rem;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  color: var(--color-text);
+  padding: 0.6rem 0.9rem;
+  border-radius: 999px;
+  backdrop-filter: blur(10px);
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.music-toggle:hover {
+  background: rgba(255, 255, 255, 0.22);
+  transform: translateY(-1px);
+}
+
+.music-toggle:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.music-note-icon {
+  color: var(--color-pink);
+}
+
+/* The YouTube player mounts here for audio only -- collapsed to 1x1px
+   and clipped so no video frame or native controls are ever visible. */
+.yt-audio-mount {
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* ==========================================================================
+   Responsive tweaks
+   ========================================================================== */
+
+@media (max-width: 520px) {
+  .glass-card {
+    padding: 2.1rem 1.4rem;
+    border-radius: 22px;
+  }
+
+  .button-row {
+    flex-direction: column;
+    gap: 0.7rem;
+  }
+
+  .btn {
+    width: 100%;
+    text-align: center;
+  }
+
+  .music-toggle {
+    padding: 0.5rem 0.7rem;
+    font-size: 0.9rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card-icon,
+  .btn-yes,
+  .app-root {
+    animation: none !important;
+  }
+}

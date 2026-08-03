@@ -11,16 +11,23 @@ const FUNNY_MESSAGES = [
 ]
 
 const MAX_ATTEMPTS = 8
+const RETRIGGER_GUARD_MS = 400 // prevents touchstart + synthetic click firing twice
 
 /**
- * Picks a random viewport position (as vh/vw strings) for the runaway
- * "Maybe" button, staying within a safe margin so it never gets stuck
- * off-screen or under a notch/edge.
+ * Picks a random on-screen position (in real pixels, based on the actual
+ * visible viewport) for the runaway "Maybe" button. Using pixels instead
+ * of vh/vw avoids the classic mobile-browser issue where vh includes
+ * space hidden behind the address bar, which could push the button
+ * partly off the visible screen.
  */
 function randomEscapePosition() {
-  const top = 12 + Math.random() * 66 // 12vh - 78vh
-  const left = 8 + Math.random() * 74 // 8vw - 82vw
-  return { top: `${top}vh`, left: `${left}vw` }
+  const vw = window.innerWidth
+  const vh = window.innerHeight
+  const margin = 60 // keep the button fully clear of screen edges
+
+  const top = margin + Math.random() * Math.max(0, vh - margin * 2)
+  const left = margin + Math.random() * Math.max(0, vw - margin * 2)
+  return { top: `${top}px`, left: `${left}px` }
 }
 
 export default function ProposalCard({ status, onYes }) {
@@ -29,12 +36,21 @@ export default function ProposalCard({ status, onYes }) {
   const [maybePos, setMaybePos] = useState({ top: '60%', left: '60%' })
   const [funnyMessage, setFunnyMessage] = useState('')
   const messageTimeout = useRef(null)
+  const lastTriggerAt = useRef(0)
 
   const maybeVisible = attempts < MAX_ATTEMPTS
 
   const handleMaybeInteraction = useCallback(
     (e) => {
       if (e) e.preventDefault()
+
+      // A tap on mobile fires both `touchstart` and a synthetic `click`
+      // right after -- without this guard that would count as two
+      // attempts (and two jumps) per single tap.
+      const now = Date.now()
+      if (now - lastTriggerAt.current < RETRIGGER_GUARD_MS) return
+      lastTriggerAt.current = now
+
       if (attempts >= MAX_ATTEMPTS) return
 
       const nextAttempts = attempts + 1

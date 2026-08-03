@@ -147,10 +147,10 @@ export default function Scene({ accepted = false }) {
   return (
     <Canvas
       shadows
-      dpr={[1, 2]}
+      dpr={[1, 1.5]}
       gl={{ antialias: true, powerPreference: 'high-performance' }}
       camera={{ position: [0, 0.4, 6], fov: 50, near: 0.1, far: 100 }}
-      style={{ position: 'fixed', inset: 0, width: '100vw', height: '100vh' }}
+      style={{ position: 'fixed', inset: 0 }}
     >
       <Suspense fallback={null}>
         <SceneContents accepted={accepted} />
